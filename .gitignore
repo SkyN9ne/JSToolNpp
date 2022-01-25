@@ -1,0 +1,12 @@
+*~
+.DS_Store
+.vs
+*.pyc
+
+sub-proj/JsonPP/tests/out.js
+sub-proj/JsonPP/tests/out.json
+
+sub-proj/Test/*/out*.js
+sub-proj/Test/*/out*.json
+
+*.old

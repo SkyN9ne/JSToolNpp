@@ -1,0 +1,14 @@
+.vscode/**
+.vs/**
+.vscode-test/**
+test/**
+.gitignore
+jsconfig.json
+vsc-extension-quickstart.md
+.eslintrc.json
+package-lock.json
+vsproj
+in.js
+outjs.js
+jsfjsnode.js
+jsonppjsnode.js

@@ -1,0 +1,174 @@
+{
+    "name": "jstool",
+    "displayName": "JSTool",
+    "description": "JS (JSON) Tool for VSC",
+    "version": "1.2109.0",
+    "publisher": "sunjw",
+    "license": "GPL-2.0",
+    "engines": {
+        "vscode": "^1.20.0"
+    },
+    "categories": [
+        "Formatters",
+        "Other"
+    ],
+    "keywords": [
+        "js formatter",
+        "jsmin",
+        "json",
+        "json sort",
+        "json tree"
+    ],
+    "icon": "resource/icon_128.png",
+    "activationEvents": [
+        "onCommand:extension.minJS",
+        "onCommand:extension.minJSNewFile",
+        "onCommand:extension.formatJS",
+        "onCommand:extension.JSONSort",
+        "onCommand:extension.JSONSortNewFile",
+        "onCommand:extension.JSONTreeView",
+        "onLanguage:javascript",
+        "onLanguage:json"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "JSTool",
+                    "title": "JSTool",
+                    "icon": "resource/outline-build-24px.svg"
+                }
+            ]
+        },
+        "views": {
+            "JSTool": [
+                {
+                    "id": "JSONTreeView",
+                    "name": "JSON Tree",
+                    "when": "showJsonTreeView"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "extension.minJS",
+                "title": "Minimize JavaScript"
+            },
+            {
+                "command": "extension.minJSNewFile",
+                "title": "Minimize JavaScript (New file)"
+            },
+            {
+                "command": "extension.formatJS",
+                "title": "Format JavaScript (JSON)"
+            },
+            {
+                "command": "extension.JSONSort",
+                "title": "JSON Sort"
+            },
+            {
+                "command": "extension.JSONSortNewFile",
+                "title": "JSON Sort (New file)"
+            },
+            {
+                "command": "extension.JSONTreeView",
+                "title": "Refresh JSON Tree View"
+            },
+            {
+                "command": "extension.JSONTreeViewClickItem",
+                "title": "Select JSON Tree View Item"
+            },
+            {
+                "command": "extension.JSONTreeViewItemRefresh",
+                "title": "Refresh"
+            },
+            {
+                "command": "extension.JSONTreeViewCopyItem",
+                "title": "Copy"
+            },
+            {
+                "command": "extension.JSONTreeViewCopyItemName",
+                "title": "Copy Name"
+            },
+            {
+                "command": "extension.JSONTreeViewCopyItemValue",
+                "title": "Copy Value"
+            },
+            {
+                "command": "extension.JSONTreeViewCopyItemRawValue",
+                "title": "Copy Raw Value"
+            },
+            {
+                "command": "extension.JSONTreeViewCopyItemPath",
+                "title": "Copy Path"
+            }
+        ],
+        "menus": {
+            "view/item/context": [
+                {
+                    "command": "extension.JSONTreeViewItemRefresh",
+                    "when": "view == JSONTreeView && viewItem == rootNode",
+                    "group": "group0"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItem",
+                    "when": "view == JSONTreeView && viewItem == rootNode",
+                    "group": "group1"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItem",
+                    "when": "view == JSONTreeView && viewItem == collapNode",
+                    "group": "group1"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItem",
+                    "when": "view == JSONTreeView && viewItem == leafNode",
+                    "group": "group1"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemName",
+                    "when": "view == JSONTreeView && viewItem == collapNode",
+                    "group": "group2@1"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemName",
+                    "when": "view == JSONTreeView && viewItem == leafNode",
+                    "group": "group2@1"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemValue",
+                    "when": "view == JSONTreeView && viewItem == leafNode",
+                    "group": "group2@2"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemRawValue",
+                    "when": "view == JSONTreeView && viewItem == leafNode",
+                    "group": "group2@3"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemPath",
+                    "when": "view == JSONTreeView && viewItem == collapNode",
+                    "group": "group2@4"
+                },
+                {
+                    "command": "extension.JSONTreeViewCopyItemPath",
+                    "when": "view == JSONTreeView && viewItem == leafNode",
+                    "group": "group2@4"
+                }
+            ]
+        }
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "@types/vscode": "^1.14.0",
+        "diff": ">=3.5.0",
+        "eslint": "^4.11.0",
+        "typescript": "^2.6.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sunjw/jstoolnpp.git"
+    }
+}

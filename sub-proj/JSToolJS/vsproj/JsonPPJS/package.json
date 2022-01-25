@@ -1,0 +1,9 @@
+{
+  "name": "jsonppjs",
+  "version": "0.0.0",
+  "description": "JsonPPJS",
+  "main": "jsonppjsnode.js",
+  "author": {
+    "name": "Sun Junwen"
+  }
+}
