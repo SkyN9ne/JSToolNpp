@@ -11,6 +11,9 @@ import re
 from logging.handlers import RotatingFileHandler
 from subprocess import call
 
+# pip3 install pywin32
+from win32api import GetFileVersionInfo, LOWORD, HIWORD
+
 log_path = './log/debug.log'
 logger = logging.getLogger('RunTime')
 logging.basicConfig(
@@ -21,7 +24,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ])
 
-VERSION_FILE = './src/version.h'
+VERSION_FILE_H = './src/version.h'
 RELEASED_FILES_DIR = './ReleasedFiles'
 DLL_FILE_NAME = 'JSMinNPP.dll'
 DLL_UNI_32_DIR = './Unicode Release'
@@ -31,7 +34,7 @@ SRC_LIST = ['icon_048.png', 'jsMinNpp15.sln', 'jsMinNpp.vcxproj', 'src']
 version = 0
 
 def is_windows_sys():
-    return (platform.system() == "Windows")
+    return (platform.system() == 'Windows')
 
 def read_file(file_path):
     file_content = ''
@@ -39,8 +42,8 @@ def read_file(file_path):
         file_content = f.read()
     return file_content
 
-def get_version():
-    version_file_content = read_file(VERSION_FILE)
+def read_version_h():
+    version_file_content = read_file(VERSION_FILE_H)
     reg = re.compile('VERSION_VALUE "(.*)"')
     #logger.info(version_file_content)
     reg_match = reg.search(version_file_content)
@@ -51,8 +54,15 @@ def get_version():
         version_value = version_parts[0] + '.' + version_parts[1] + '.' + version_parts[2]
     return version_value
 
+def read_version_exe(filename):
+    info = GetFileVersionInfo(filename, '\\')
+    ms = info['FileVersionMS']
+    ls = info['FileVersionLS']
+    return '%s.%s.%s.%s' % (HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls))
+
 def package_dll():
     global version
+    version_full = version + '.0'
 
     cwd = os.getcwd()
     #logger.info(cwd)
@@ -63,6 +73,11 @@ def package_dll():
     os.chdir(DLL_UNI_32_DIR)
     dll_uni_32_zip_full = os.path.join(released_files_dir_full, 'JSToolNPP.%s.uni.32.zip' % (version))
     #logger.info(dll_uni_32_zip_full)
+    dll_uni_32_version = read_version_exe(DLL_FILE_NAME)
+    #logger.info(dll_uni_32_version)
+    if not dll_uni_32_version == version_full:
+        logger.error('Version not match, want: %s, found %s' % (version, dll_uni_32_version))
+        return
     call(['7z', 'a', dll_uni_32_zip_full, DLL_FILE_NAME])
     # Go back
     os.chdir(cwd)
@@ -71,6 +86,11 @@ def package_dll():
     os.chdir(DLL_UNI_64_DIR)
     dll_uni_64_zip_full = os.path.join(released_files_dir_full, 'JSToolNPP.%s.uni.64.zip' % (version))
     #logger.info(dll_uni_64_zip_full)
+    dll_uni_64_version = read_version_exe(DLL_FILE_NAME)
+    #logger.info(dll_uni_64_version)
+    if not dll_uni_64_version == version_full:
+        logger.error('Version not match, want: %s, found %s' % (version, dll_uni_64_version))
+        return
     call(['7z', 'a', dll_uni_64_zip_full, DLL_FILE_NAME])
     # Go back
     os.chdir(cwd)
@@ -93,7 +113,7 @@ def main():
 
     os.chdir(os.path.dirname(__file__))
 
-    version = get_version()
+    version = read_version_h()
     logger.info('Version: %s' % (version))
 
     package_dll()

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 'use strict';
 
-const VERSION = "1.2109.0.0";
+const VERSION = "1.2205.0.0";
 
 function StringReplaceAll(string, target, replace) {
     return string.replace(new RegExp(target, 'g'), replace);
@@ -588,7 +588,8 @@ class JSParser {
             this.m_tokenB.inlineComment = true;
         }
 
-        if (this.m_tokenB.code != "else" && this.m_tokenB.code != "while" && this.m_tokenB.code != "catch" &&
+        if (this.m_tokenB.code != "else" && this.m_tokenB.code != "while" &&
+            this.m_tokenB.code != "catch" && this.m_tokenB.code != "finally" &&
             this.m_tokenB.code != "," && this.m_tokenB.code != ";" && this.m_tokenB.code != ")") {
             // push newline into queue
             if (this.m_tokenA.code == "{" && this.m_tokenB.code == "}") {

@@ -455,7 +455,6 @@ void RealJSFormatter::Go()
 			break;
 		case OPER_TYPE:
 			ProcessOper(bHaveNewLine, tokenAFirst, tokenBFirst);
-
 			break;
 		case STRING_TYPE:
 			ProcessString(bHaveNewLine, tokenAFirst, tokenBFirst);
@@ -839,6 +838,7 @@ void RealJSFormatter::ProcessOper(bool bHaveNewLine, char tokenAFirst, char toke
 			!((topStack == JS_DO && m_tokenB.code == "while") ||
 			(topStack == JS_IF && m_tokenB.code == "else") ||
 			(topStack == JS_TRY && m_tokenB.code == "catch") ||
+			((topStack == JS_TRY || topStack == JS_CATCH) && m_tokenB.code == "finally") ||
 			m_tokenB.code == ")")))
 		{
 			if (strRight.length() == 0 || strRight[strRight.length() - 1] != '\n')
