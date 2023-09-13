@@ -1,3 +1,10 @@
+1.2308.0  
+[NPP] Add ARM64 support.  
+
+1.2307.1  
+[Common] Fix template literals format.  
+[Common] Fix "while" format.  
+
 1.2205.0  
 [Common] Tweak "finally" block format.  
 

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 'use strict';
 
-const VERSION = "1.2205.0.0";
+const VERSION = "1.2308.0.0";
 
 function StringReplaceAll(string, target, replace) {
     return string.replace(new RegExp(target, 'g'), replace);
@@ -75,6 +75,7 @@ const JS_BRACKET = '(';
 const JS_SQUARE = '[';
 const JS_ASSIGN = '=';
 const JS_QUEST_MARK = '?';
+const JS_TEMP_LITE = '$';
 const JS_HELPER = '\\';
 const JS_STUB = ' ';
 const JS_EMPTY = '\0';
@@ -100,6 +101,9 @@ class JSParser {
         this.m_tokenB = new Token();
 
         this.m_tokenBQueue = [];
+
+        this.m_blockStack = [];
+
         this.m_startClock = 0;
         this.m_endClock = 0;
         this.m_duration = 0;
@@ -113,6 +117,7 @@ class JSParser {
         this.m_bRegular = false;
         this.m_iRegBracket = 0;
         this.m_bPosNeg = false;
+        this.m_bTempLite = false;
         this.m_bGetTokenInit = false;
     }
 
@@ -147,7 +152,12 @@ class JSParser {
 
     IsQuote(ch) {
         // quote
-        return (ch == '\'' || ch == '\"' || ch == '`');
+        return (ch == '\'' || ch == '\"');
+    }
+
+    IsTemplate(ch) {
+        // template
+        return (ch == '`');
     }
 
     IsInlineComment(token) {
@@ -181,6 +191,7 @@ class JSParser {
 
         this.PrepareRegular(); // recognize regular
         this.PreparePosNeg(); // recognize +/-
+        this.PrepareTempLite(); // recognize template literals
 
         ++this.m_tokenCount;
         this.m_tokenPreA = CopyObject(this.m_tokenA);
@@ -242,6 +253,14 @@ class JSParser {
         let bLineBegin = false;
         let chQuote = ''; // quote is ' or "
         let chComment = ''; // comment is / or *
+
+        if (this.m_bTempLite) {
+            bQuote = true;
+            chQuote = '`';
+            this.m_tokenB.type = STRING_TYPE;
+            this.m_tokenB.code += this.m_charA;
+        }
+
         while (1) {
             this.m_charA = this.m_charB;
             if (this.m_charA == '\0') {
@@ -337,6 +356,12 @@ class JSParser {
                     return;
                 }
 
+                if (chQuote == '`' && this.m_charA == '$' && this.m_charB == '{') { // template literals
+                    this.m_tokenB.code += this.m_charB;
+                    this.m_charB = this.GetChar();
+                    return;
+                }
+
                 continue;
             }
 
@@ -424,7 +449,7 @@ class JSParser {
                     continue; // ignore blank char
                 }
 
-                if (this.IsQuote(this.m_charA)) {
+                if (this.IsQuote(this.m_charA) || this.IsTemplate(this.m_charA)) {
                     // quote
                     bQuote = true;
                     chQuote = this.m_charA;
@@ -452,7 +477,8 @@ class JSParser {
                 }
 
                 if (this.IsSingleOper(this.m_charA) ||
-                    this.IsNormalChar(this.m_charB) || this.IsBlankChar(this.m_charB) || this.IsQuote(this.m_charB)) {
+                    this.IsNormalChar(this.m_charB) || this.IsBlankChar(this.m_charB) ||
+                    this.IsQuote(this.m_charB) || this.IsTemplate(this.m_charB)) {
                     this.m_tokenB.type = OPER_TYPE;
                     this.m_tokenB.code = this.m_charA; // single char operator
                     return;
@@ -566,6 +592,14 @@ class JSParser {
         }
     }
 
+    PrepareTempLite() {
+        if (this.m_tokenB.code == "}" && StackTopEq(this.m_blockStack, JS_TEMP_LITE)) {
+            this.m_bTempLite = true;
+            this.GetTokenRaw();
+            this.m_bTempLite = false;
+        }
+    }
+
     PrepareTokenB() {
         //char stackTop = m_blockStack.top();
 
@@ -588,12 +622,26 @@ class JSParser {
             this.m_tokenB.inlineComment = true;
         }
 
-        if (this.m_tokenB.code != "else" && this.m_tokenB.code != "while" &&
+        if (this.m_tokenB.code != "else" && /*this.m_tokenB.code != "while" &&*/
             this.m_tokenB.code != "catch" && this.m_tokenB.code != "finally" &&
             this.m_tokenB.code != "," && this.m_tokenB.code != ";" && this.m_tokenB.code != ")") {
             // push newline into queue
             if (this.m_tokenA.code == "{" && this.m_tokenB.code == "}") {
                 return; // empty {}
+            }
+
+            if (this.m_tokenA.code == "}" && this.m_tokenB.code == "while" &&
+                StackTopEq(this.m_blockStack, JS_BLOCK)) {
+                let eatNewLine = false;
+                let topStack = GetStackTop(this.m_blockStack);
+                this.m_blockStack.pop();
+                if (StackTopEq(this.m_blockStack, JS_DO)) {
+                    eatNewLine = true;
+                }
+                this.m_blockStack.push(topStack);
+                if (eatNewLine) {
+                    return;
+                }
             }
 
             let temp;
@@ -671,6 +719,7 @@ exports.JS_BRACKET = JS_BRACKET;
 exports.JS_SQUARE = JS_SQUARE;
 exports.JS_ASSIGN = JS_ASSIGN;
 exports.JS_QUEST_MARK = JS_QUEST_MARK;
+exports.JS_TEMP_LITE = JS_TEMP_LITE;
 exports.JS_HELPER = JS_HELPER;
 exports.JS_STUB = JS_STUB;
 exports.JS_EMPTY = JS_EMPTY;

@@ -100,7 +100,7 @@ if ($checking) {
                     <p>&nbsp;</p>
                     <p>What's New in <a class="smoothAnchor" href="#download"><?php echo $cur_version; ?></a>:</p>
                     <ul class="indentList discList">
-                        <li>Tweak "finally" block format.</li>
+                        <li>Add ARM64 support.</li>
                     </ul>
                     <p>&nbsp;</p>
                     <p><a href='https://ko-fi.com/Y8Y72L3FZ' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi4.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a></p>
@@ -124,15 +124,16 @@ if ($checking) {
                         <li>
                             <div>
                                 <p>Unicode build:</p>
-                                <p>64bit - JSToolNPP.<?php echo $cur_version; ?>.uni.64.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Uni/JSToolNPP.<?php echo $cur_version; ?>.uni.64.zip/download" target="_blank">Download from SourceForge.net</a></p>
-                                <p>32bit - JSToolNPP.<?php echo $cur_version; ?>.uni.32.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Uni/JSToolNPP.<?php echo $cur_version; ?>.uni.32.zip/download" target="_blank">Download from SourceForge.net</a></p>
+                                <p>x64 - JSToolNPP.<?php echo $cur_version; ?>.uni.64.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Uni/JSToolNPP.<?php echo $cur_version; ?>.uni.64.zip/download" target="_blank">Download from SourceForge.net</a></p>
+                                <p>arm64 - JSToolNPP.<?php echo $cur_version; ?>.uni.arm64.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Uni/JSToolNPP.<?php echo $cur_version; ?>.uni.arm64.zip/download" target="_blank">Download from SourceForge.net</a></p>
+                                <p>win32 - JSToolNPP.<?php echo $cur_version; ?>.uni.32.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Uni/JSToolNPP.<?php echo $cur_version; ?>.uni.32.zip/download" target="_blank">Download from SourceForge.net</a></p>
                             </div>
                         </li>
                         <li>
                             <div>
                                 <p>ASCII build (<em>no more updates after 1.20.2</em>):</p>
-                                <p>64bit - JSToolNPP.1.20.2.asc.64.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Asc/JSToolNPP.1.20.2.asc.64.zip/download" target="_blank">Download from SourceForge.net</a></p>
-                                <p>32bit - JSToolNPP.1.20.2.asc.32.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Asc/JSToolNPP.1.20.2.asc.32.zip/download" target="_blank">Download from SourceForge.net</a></p>
+                                <p>x64 - JSToolNPP.1.20.2.asc.64.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Asc/JSToolNPP.1.20.2.asc.64.zip/download" target="_blank">Download from SourceForge.net</a></p>
+                                <p>win32 - JSToolNPP.1.20.2.asc.32.zip:&nbsp;<a href="https://sourceforge.net/projects/jsminnpp/files/Asc/JSToolNPP.1.20.2.asc.32.zip/download" target="_blank">Download from SourceForge.net</a></p>
                             </div>
                         </li>
                     </ul>

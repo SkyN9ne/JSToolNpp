@@ -42,6 +42,8 @@ void JSParser::Init()
 
 	m_bPosNeg = false;
 
+	m_bTempLite = false;
+
 	m_bGetTokenInit = false;
 }
 
@@ -122,6 +124,14 @@ void JSParser::GetTokenRaw()
 	bool bLineBegin = false;
 	char chQuote = 0; // 记录引号类型 ' 或 "
 	char chComment = 0; // 注释类型 / 或 *
+
+	if (m_bTempLite)
+	{
+		bQuote = true;
+		chQuote = '`';
+		m_tokenB.type = STRING_TYPE;
+		m_tokenB.code.push_back(m_charA);
+	}
 
 	while (1)
 	{
@@ -234,6 +244,13 @@ void JSParser::GetTokenRaw()
 				return;
 			}
 
+			if (chQuote == '`' && m_charA == '$' && m_charB == '{') // 模版字面量
+			{
+				m_tokenB.code.push_back(m_charB);
+				m_charB = GetChar();
+				return;
+			}
+
 			continue;
 		}
 
@@ -340,7 +357,7 @@ void JSParser::GetTokenRaw()
 				continue; // 忽略空白字符
 			}
 
-			if (IsQuote(m_charA))
+			if (IsQuote(m_charA) || IsTemplate(m_charA))
 			{
 				// 引号
 				bQuote = true;
@@ -371,7 +388,8 @@ void JSParser::GetTokenRaw()
 			}
 
 			if (IsSingleOper(m_charA) ||
-				IsNormalChar(m_charB) || IsBlankChar(m_charB) || IsQuote(m_charB))
+				IsNormalChar(m_charB) || IsBlankChar(m_charB) ||
+				IsQuote(m_charB) || IsTemplate(m_charB))
 			{
 				m_tokenB.type = OPER_TYPE;
 				m_tokenB.code = m_charA; // 单字符符号
@@ -462,6 +480,7 @@ bool JSParser::GetToken()
 
 	PrepareRegular(); // 判断正则
 	PreparePosNeg(); // 判断正负数
+	PrepareTempLite(); // 判断模版字面量
 
 	++m_tokenCount;
 	m_tokenPreA = m_tokenA;
@@ -533,6 +552,16 @@ void JSParser::PreparePosNeg()
 	}
 }
 
+void JSParser::PrepareTempLite()
+{
+	if (m_tokenB.code == "}" && StackTopEq(m_blockStack, JS_TEMP_LITE))
+	{
+		m_bTempLite = true;
+		GetTokenRaw();
+		m_bTempLite = false;
+	}
+}
+
 void JSParser::PrepareTokenB()
 {
 	//char stackTop = m_blockStack.top();
@@ -558,7 +587,7 @@ void JSParser::PrepareTokenB()
 		m_tokenB.inlineComment = true;
 	}
 
-	if (m_tokenB.code != "else" && m_tokenB.code != "while" && 
+	if (m_tokenB.code != "else" && /*m_tokenB.code != "while" &&*/
 		m_tokenB.code != "catch" && m_tokenB.code != "finally" &&
 		m_tokenB.code != "," && m_tokenB.code != ";" && m_tokenB.code != ")")
 	{
@@ -566,6 +595,24 @@ void JSParser::PrepareTokenB()
 		if (m_tokenA.code == "{" && m_tokenB.code == "}")
 		{
 			return; // 空 {}
+		}
+
+		if (m_tokenA.code == "}" && m_tokenB.code == "while" &&
+			StackTopEq(m_blockStack, JS_BLOCK))
+		{
+			bool eatNewLine = false;
+			char topStack;
+			GetStackTop(m_blockStack, topStack);
+			m_blockStack.pop();
+			if (StackTopEq(m_blockStack, JS_DO))
+			{
+				eatNewLine = true;
+			}
+			m_blockStack.push(topStack);
+			if (eatNewLine)
+			{
+				return;
+			}
 		}
 
 		Token temp;
