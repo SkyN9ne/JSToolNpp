@@ -227,7 +227,12 @@ class RealJSFormatter extends JSParser.JSParser {
             //PutToken(m_tokenA);
             switch (this.m_tokenA.type) {
             case JSParser.REGULAR_TYPE:
-                this.PutToken(this.m_tokenA); // directly output regular without any format
+                if (this.m_tokenPreA.type == JSParser.STRING_TYPE &&
+                    !this.m_bracketKeywordSet.includes(this.m_tokenPreA.code)) {
+                    this.PutToken(this.m_tokenA, " ");
+                } else {
+                    this.PutToken(this.m_tokenA); // directly output regular without any format
+                }
                 break;
             case JSParser.COMMENT_TYPE_1:
             case JSParser.COMMENT_TYPE_2:
@@ -353,7 +358,8 @@ class RealJSFormatter extends JSParser.JSParser {
         if (this.m_tokenA.code == "(" || this.m_tokenA.code == ")" ||
             this.m_tokenA.code == "[" || this.m_tokenA.code == "]" ||
             this.m_tokenA.code == "!" || this.m_tokenA.code == "!!" ||
-            this.m_tokenA.code == "~" || this.m_tokenA.code == ".") {
+            this.m_tokenA.code == "~" || this.m_tokenA.code == "." ||
+            this.m_tokenA.code == "#") {
             // ()[]!. with no format
             if ((this.m_tokenA.code == ")" || this.m_tokenA.code == "]") &&
                 (topStack == JSParser.JS_ASSIGN || topStack == JSParser.JS_HELPER)) {
@@ -795,7 +801,7 @@ class RealJSFormatter extends JSParser.JSParser {
         if (this.m_tokenB.type == JSParser.STRING_TYPE ||
             this.m_tokenB.type == JSParser.COMMENT_TYPE_1 ||
             this.m_tokenB.type == JSParser.COMMENT_TYPE_2 ||
-            this.m_tokenB.code == "{" ||
+            this.m_tokenB.code == "{" || this.m_tokenB.code == "#" ||
             (this.m_declareKeywordSet.includes(this.m_tokenA.code) && this.m_tokenB.code == "[")) {
             if (this.m_tokenA.type == JSParser.STRING_TYPE &&
                 this.m_tokenA.code.endsWith("${")) {
@@ -831,7 +837,6 @@ class RealJSFormatter extends JSParser.JSParser {
             // indent after read ()
             this.m_brcNeedStack.push(false);
             this.m_blockStack.push(this.m_blockMap[this.m_tokenA.code]);
-
         }
 
         if (!bTokenAPropName && this.m_tokenA.code == "switch") {

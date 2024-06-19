@@ -442,7 +442,15 @@ void RealJSFormatter::Go()
 		switch (m_tokenA.type)
 		{
 		case REGULAR_TYPE:
-			PutToken(m_tokenA); // 正则表达式直接输出, 前后没有任何样式
+			if (m_tokenPreA.type == STRING_TYPE &&
+				m_bracketKeywordSet.find(m_tokenPreA.code) == m_bracketKeywordSet.end())
+			{
+				PutToken(m_tokenA, string(" "));
+			}
+			else
+			{
+				PutToken(m_tokenA); // 正则表达式直接输出, 前后没有任何样式
+			}
 			break;
 		case COMMENT_TYPE_1:
 		case COMMENT_TYPE_2:
@@ -517,7 +525,8 @@ void RealJSFormatter::ProcessOper(bool bHaveNewLine, char tokenAFirst, char toke
 	if (m_tokenA.code == "(" || m_tokenA.code == ")" ||
 		m_tokenA.code == "[" || m_tokenA.code == "]" ||
 		m_tokenA.code == "!" || m_tokenA.code == "!!" ||
-		m_tokenA.code == "~" || m_tokenA.code == ".")
+		m_tokenA.code == "~" || m_tokenA.code == "." ||
+		m_tokenA.code == "#")
 	{
 		// ()[]!. 都是前后没有样式的运算符
 		if ((m_tokenA.code == ")" || m_tokenA.code == "]") &&
@@ -1057,7 +1066,7 @@ void RealJSFormatter::ProcessString(bool bHaveNewLine, char tokenAFirst, char to
 	if (m_tokenB.type == STRING_TYPE ||
 		m_tokenB.type == COMMENT_TYPE_1 ||
 		m_tokenB.type == COMMENT_TYPE_2 ||
-		m_tokenB.code == "{" ||
+		m_tokenB.code == "{" || m_tokenB.code == "#" ||
 		(m_declareKeywordSet.find(m_tokenA.code) != m_declareKeywordSet.end() &&
 			m_tokenB.code == "["))
 	{
@@ -1106,7 +1115,6 @@ void RealJSFormatter::ProcessString(bool bHaveNewLine, char tokenAFirst, char to
 		// 等待 (), () 到来后才能加缩进
 		m_brcNeedStack.push(false);
 		m_blockStack.push(m_blockMap[m_tokenA.code]);
-
 	}
 
 	if (!bTokenAPropName && m_tokenA.code == "switch")

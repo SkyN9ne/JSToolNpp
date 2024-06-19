@@ -1,3 +1,10 @@
+1.2312.0  
+[Common] Fix regular expression format.  
+[Common] Change "ROOT" to "$" in JSON viewer.  
+
+1.2311.0  
+[Common] Fix "#" private class members format.  
+
 1.2308.0  
 [NPP] Add ARM64 support.  
 

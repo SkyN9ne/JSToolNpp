@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 'use strict';
 
-const VERSION = "1.2308.0.0";
+const VERSION = "1.2312.0.0";
 
 function StringReplaceAll(string, target, replace) {
     return string.replace(new RegExp(target, 'g'), replace);
@@ -146,7 +146,7 @@ class JSParser {
         // single operator
         return (ch == '.' || ch == '(' || ch == ')' ||
             ch == '[' || ch == ']' || ch == '{' || ch == '}' ||
-            ch == ',' || ch == ';' || ch == '~' ||
+            ch == ',' || ch == ';' || ch == '~' || ch == '#' ||
             ch == '\n');
     }
 
@@ -558,7 +558,8 @@ class JSParser {
         if (tokenBFirst == '/' && this.m_tokenB.type != COMMENT_TYPE_1 &&
             this.m_tokenB.type != COMMENT_TYPE_2 &&
             ((this.m_tokenA.type != STRING_TYPE && this.m_strBeforeReg.indexOf(tokenALast) != -1) ||
-                (this.m_tokenA.code == "return" || this.m_tokenA.code == "throw"))) {
+                (this.m_tokenA.code == "return" || this.m_tokenA.code == "throw" ||
+                    this.m_tokenA.code == "in" || this.m_tokenA.code == "of"))) {
             this.m_bRegular = true;
             this.GetTokenRaw(); // put regular into m_tokenB
         }
